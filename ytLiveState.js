@@ -45,7 +45,7 @@ const handleStreamerIsOn = (state, actionWhenStreamIsOn, isStreaming, timeToDela
         return;
     }
     if (!sendMessageToEveryone) {
-        console.log(`stream is online: ${state.streamIsAlreadyOnline}`)
+//        console.log(`stream is online: ${state.streamIsAlreadyOnline}`)
         return
     }
 }

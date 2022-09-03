@@ -1,7 +1,7 @@
 import { exec } from  "child_process";
 import dotenv from "dotenv"
-
-import { getLiveVideoURLFromChannelID, twitterUrlPurifier } from "./urlUtils.js"
+import chalk from "chalk"
+import { getLiveVideoURLFromChannelID} from "./urlUtils.js"
 import { handleDoubleCheck, handleStreameIsRemainingOnline, handleStreamerIsOn } from "./ytLiveState.js"
 
 const toSeconds = seconds => seconds * 1000
@@ -13,15 +13,30 @@ const ytChannelId = process.env.ytChannelId
 const saveFilePath = process.env.saveFilePath
 
 const pollingIntervalTimer = toSeconds(49)
-const timeToDelayCheck = toMinutes(1)
+const timeToDelayCheck = toSeconds(40)
+const getStreamStatus= (streamIsOnline)=>{
+	if(streamIsOnline){
+		console.log(chalk.white.bgBlack("Stream is online!"))
+	} 
+	else {
+		console.log(chalk.white.bgRed("Stream offline"))
+	}
 
+}
 
-
-const handleYouTubePoll = () => {
+/**
+ * handleYouTubePoll.
+ *
+ * @param {function} streamGoesOffline - handles what happens when stream goes offline
+ * @param {function} streamToLive - handles when stream goes live
+ */
+export const handleYouTubePoll = ({streamGoesOffline, streamToLive}) => {
+	console.log(chalk.green("ytlivemanager has started"))
 	const state = {
 		streamerIsOn: false,
 		streamIsAlreadyOnline: nodeArguments.includes("skip"),
 		doubleCheckIfOffline: false,
+		intervalCounter: 0,
 		setStreamerIsOn(val) {
 			state.streamerIsOn = val
 		},
@@ -32,18 +47,24 @@ const handleYouTubePoll = () => {
 			console.log(state.doubleCheckIfOffline)
 			state.doubleCheckIfOffline = val
 		},
-	}
+	}	
+	
 	const handleInterval = async () => {
+		if(state.intervalCounter > 0){
+			state.intervalCounter = 0
+			console.clear()
+			getStreamStatus(state.streamIsAlreadyOnline)
+		}
+
+
+		state.intervalCounter++
+
 		await getLiveVideoURLFromChannelID(ytChannelId).then(({ isStreaming, canonicalURL }) => {
 
 			if(state.streamerIsOn){
 				return;
 			}
-			handleDoubleCheck(state, () => {
-				// streamer has gone permanently offline
-				// handleStreamerGoneOffline
-
-			}, isStreaming, timeToDelayCheck)
+			handleDoubleCheck(state, streamGoesOffline)
 			if(state.doubleCheckIfOffline){
 				return
 			}
@@ -52,23 +73,11 @@ const handleYouTubePoll = () => {
 				return
 			}
 
-			handleStreamerIsOn(state, () => {
-				//send message only once
-				console.clear()
-				const today = new Date();
-				const date = today.getMonth()+'-'+(today.getYear())+'-'+today.getDate();
-				const time = today.getHours() + ":" + today.getMinutes()
-				const dateTime = date+' '+time;
-				const filename = `cc${dateTime}`
-				console.log("Channel has gone online!", dateTime)
-
-				exec(`streamlink --http-no-ssl-verify ${canonicalURL} best -o ${saveFilePath}/${filename}.ts`)
-
-			}, isStreaming, 1000 * 60 * 25)
+			handleStreamerIsOn(state,  streamToLive , isStreaming, 1000 * 20)
 			return;
 		}).catch(err => console.log(err))
 	}
 
 	const interval = setInterval(handleInterval, pollingIntervalTimer)
+
 }
-handleYouTubePoll()
