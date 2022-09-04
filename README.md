@@ -22,7 +22,7 @@ streamGoesOffline // a function to run when stream goes offline
 ```
 
 ### Known issues
-- Polling from `getLiveVideoURLFromChannelID` in `urlUtils.js` is provides reliable data, but I think it can be improved. I am no RegExp God.
+- Polling from `getLiveVideoURLFromChannelID` in `urlUtils.js` provides reliable data, but I think it can be improved. I am no RegExp God.
 - Polling will run sometimes if a channel posts a "preview" for an event
 - I have excess stuff in here. I am still planning out what I want to do with the repo.
 - If a stream is chaotic with internet issues, it can ping twice. There is a 40 second double check to prevent most issues witht his. But sometimes your streamer gets drunk in Los Vegas going in and out of casinos restarting. his stream and your streamToLive function will hate him
