@@ -6,7 +6,7 @@ Node 18+
 
 # install
 
-`npm i https://github.com/redragerover/ytlivemanager`
+`npm i redragerover/ytlivemanager#alpha`
 
 ## use
 example being used in a discord bot
