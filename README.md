@@ -9,6 +9,7 @@ Node 18+
 `npm i https://github.com/redragerover/ytlivemanager`
 
 ## use
+![image](https://user-images.githubusercontent.com/105608997/188329083-01253712-442e-43ba-ae87-7153ac784cbd.png)
 
 ````javascript handleYouTubePoll({
 identifier, // a channel ID for a YouTube channel. Looks like 'fAFJcchSAFnASfq0'
