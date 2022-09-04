@@ -25,6 +25,7 @@ const getStreamStatus = (streamIsOnline) => {
  *
  * @param {function} streamGoesOffline - handles what happens when stream goes offline
  * @param {function} streamToLive - handles when stream goes live
+ * @param {string} identifier - a youtube channelId
  */
 export const handleYouTubePoll = ({
   identifier,
@@ -33,6 +34,7 @@ export const handleYouTubePoll = ({
 }) => {
   if (!identifier) {
     console.log("identifier undefined");
+    return;
   }
   const ytChannelId = identifier;
 
