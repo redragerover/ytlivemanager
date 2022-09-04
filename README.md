@@ -1,11 +1,20 @@
 # ytlivemanager
 
-in this example you can record a youtube livestream using cli tool Streamlink available here https://streamlink.github.io/install.html
+A simple function to poll a youtube channel for a live stream.
 
-I will probably make this even more modular and able to handle multiples channels.
+Node 18+
 
-to get starter simply `npm install && npm start`
-You will probably need Node 18
+# install
 
+`npm i https://github.com/redragerover/ytlivemanager`
+
+## use
+
+````javascript handleYouTubePoll({
+identifier, // a channel ID for a YouTube channel. Looks like 'fAFJcchSAFnASfq0'
+streamToLive, // a function to run when a stream goes live
+streamGoesOffline // a function to run when stream goes offline
+    })
+```
 
 I want to make this into a simple package and worker you just run and give it 3 functions to handle live stream state for a channel and y'all can do what you want with it
