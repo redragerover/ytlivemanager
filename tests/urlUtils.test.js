@@ -1,4 +1,8 @@
-import { twitterUrlPurifier, getLiveVideoURLFromChannelID } from "../urlUtils";
+import {
+  twitterUrlPurifier,
+  getLiveVideoURLFromChannelID,
+  getYoutubeVideoURL,
+} from "../urlUtils";
 
 describe("twitterUrlPurifier", () => {
   it("should return a twitter URL free from query params", () => {
@@ -43,5 +47,26 @@ describe("twitterUrlPurifier", () => {
       "https://twitter.com/denverchannel/status/1565189956892430336"
     );
     expect(result).toMatchObject({ purifiedTwitterUrl: "" });
+  });
+});
+describe("getLiveVideoURLFromChannelID", () => {
+  it("if the youtube request  fails, it should return isStreaming false and a message", async () => {
+    const result = await getLiveVideoURLFromChannelID("ff1234567");
+    expect(result).toMatchObject({
+      canonicalURL: "PA is offline",
+      isStreaming: false,
+    });
+  });
+  // get node-fetch mock to work
+  it.todo(
+    "if the youtube request succeeds, then it should return isStreaming true and a youtube url"
+  );
+});
+describe("getYoutubeVideoURL", () => {
+  it("should return a youtubevideo URL from HTML that contains it", () => {
+    const result = getYoutubeVideoURL(
+      `/[a-zA-Z]{0,3}twitter.com/) u0026v=rUxyKA_-grg","targ`
+    );
+    expect(result).toBe("https://www.youtube.com/watch?v=rUxyKA_-grg");
   });
 });

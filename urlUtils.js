@@ -1,6 +1,21 @@
-import { parse } from "node-html-parser";
 import fetch from "node-fetch";
 
+export const getYoutubeVideoURL = (htmlString) => {
+  const vidURLRegExp = new RegExp(/u0026v=(.*?)"/);
+  const regExpResult = vidURLRegExp.exec(htmlString);
+
+  if (regExpResult) {
+    const incompleteURL = regExpResult[0];
+    const firstIndex = incompleteURL.indexOf("v=");
+    const endIndex = incompleteURL.indexOf('"', firstIndex);
+    const cleanURL = `https://www.youtube.com/watch?${incompleteURL.substring(
+      firstIndex,
+      endIndex
+    )}`;
+    return cleanURL;
+  }
+  return "";
+};
 const getLiveVideoURLFromChannelID = async (channelID) => {
   const response = await fetch(
     `https://youtube.com/channel/${channelID}/live`
@@ -8,17 +23,9 @@ const getLiveVideoURLFromChannelID = async (channelID) => {
   if (!response) {
     return { canonicalURL: "", isStreaming: false };
   }
-  const text = await response.text();
-  const html = parse(text);
-  const canonicalURLTag = html.querySelector("link[rel=canonical]");
-  let canonicalURL = canonicalURLTag.getAttribute("href");
-
-  const isStreaming =
-    canonicalURL.includes("/watch?v=") &&
-    text.includes('isLive":true}}') &&
-    !text.includes("Scheduled for");
-
-  canonicalURL = isStreaming ? canonicalURL : "Channel is not live";
+  const url = getYoutubeVideoURL(response.text());
+  const canonicalURL = url || "PA is offline";
+  const isStreaming = !!url;
   return { canonicalURL, isStreaming };
 };
 
