@@ -24,16 +24,16 @@ const getLiveVideoURLFromChannelID = async (channelID) => {
 
 const twitterUrlPurifier = (message) => {
   let purifiedTwitterUrl = "";
-  //const twitterRegExp = new RegExp(/[a-zA-Z]{0,3}twitter.com/);
+  const twitterRegExp = new RegExp(/[a-zA-Z]{0,3}twitter.com/);
   const hasTrecherousURLTrackerRegExp = new RegExp(/(\?|&)[a-zA-Z].*=[^\s]*/);
-  if (
-    //!twitterRegExp.test(message) &&
-    !hasTrecherousURLTrackerRegExp.test(message)
-  ) {
+  if (!twitterRegExp.test(message)) {
     return { purifiedTwitterUrl };
   }
-
+  if (!hasTrecherousURLTrackerRegExp.test(message)) {
+    return { purifiedTwitterUrl };
+  }
   purifiedTwitterUrl = message.replace(hasTrecherousURLTrackerRegExp, "");
+
   if (message === purifiedTwitterUrl) {
     return { purifiedTwitterUrl: "" };
   }

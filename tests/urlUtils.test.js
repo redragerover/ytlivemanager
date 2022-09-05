@@ -21,4 +21,27 @@ describe("twitterUrlPurifier", () => {
         "https://VXCtwitter.com/denverchannel/status/1565189956892430336",
     });
   });
+  it("should only work for twitterURLs", () => {
+    const result = twitterUrlPurifier(
+      "https://www.youtube.com/watch?v=fDoJnUXnek4"
+    );
+    expect(result).toMatchObject({
+      purifiedTwitterUrl: "",
+    });
+  });
+  it("should work with twitter urls inside of a paragraph of text while returning the text", () => {
+    const result = twitterUrlPurifier(
+      `and stuff here https://VXCtwitter.com/denverchannel/status/1565189956892430336?jfd=iafjaidfj33  stuff here`
+    );
+    expect(result).toMatchObject({
+      purifiedTwitterUrl:
+        "and stuff here https://VXCtwitter.com/denverchannel/status/1565189956892430336  stuff here",
+    });
+  });
+  it("should return an empty string if just a standard twitter url", () => {
+    const result = twitterUrlPurifier(
+      "https://twitter.com/denverchannel/status/1565189956892430336"
+    );
+    expect(result).toMatchObject({ purifiedTwitterUrl: "" });
+  });
 });
