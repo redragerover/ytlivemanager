@@ -2,8 +2,9 @@
   "name": "ytlivemanager",
   "version": "1.0.0",
   "main": "statehandler.js",
+  "type": "module",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
+    "test": "node --experimental-vm-modules node_modules/jest/bin/jest.js",
     "start": "node statehandler.js"
   },
   "type": "module",
@@ -19,5 +20,8 @@
     "winston": "^3.7.2",
     "winston-daily-rotate-file": "^4.6.1"
   },
-  "description": ""
+  "description": "",
+  "devDependencies": {
+    "jest": "^29.0.2"
+  }
 }
