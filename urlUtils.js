@@ -1,9 +1,8 @@
 import fetch from "node-fetch";
 
 export const getYoutubeVideoURL = (htmlString) => {
-  const vidURLRegExp = new RegExp(/u0026v=(.*?)"/);
+  const vidURLRegExp = new RegExp(/u0026v=(.*?)\"/);
   const regExpResult = vidURLRegExp.exec(htmlString);
-
   if (regExpResult) {
     const incompleteURL = regExpResult[0];
     const firstIndex = incompleteURL.indexOf("v=");
@@ -23,7 +22,7 @@ const getLiveVideoURLFromChannelID = async (channelID) => {
   if (!response) {
     return { canonicalURL: "", isStreaming: false };
   }
-  const url = getYoutubeVideoURL(response.text());
+  const url = getYoutubeVideoURL(await response.text());
   const canonicalURL = url || "PA is offline";
   const isStreaming = !!url;
   return { canonicalURL, isStreaming };

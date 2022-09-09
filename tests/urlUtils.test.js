@@ -18,11 +18,10 @@ describe("twitterUrlPurifier", () => {
   it("should return a prefix twitterUrl for any prefix'd twitterUrls if they exist, up to 3 alpha numeric letters", () => {
     const prefix = "VXC";
     const result = twitterUrlPurifier(
-      `https://VXCtwitter.com/denverchannel/status/1565189956892430336?jfd=iafjaidfj33`
+      `https://${prefix}twitter.com/denverchannel/status/1565189956892430336?jfd=iafjaidfj33`
     );
     expect(result).toMatchObject({
-      purifiedTwitterUrl:
-        "https://VXCtwitter.com/denverchannel/status/1565189956892430336",
+      purifiedTwitterUrl: `https://${prefix}twitter.com/denverchannel/status/1565189956892430336`,
     });
   });
   it("should only work for twitterURLs", () => {
@@ -59,7 +58,7 @@ describe("getLiveVideoURLFromChannelID", () => {
   });
   // get node-fetch mock to work
   it.todo(
-    "if the youtube request succeeds, then it should return isStreaming true and a youtube url"
+    "if he youtube request succeeds, then it should return isStreaming true and a youtube url"
   );
 });
 describe("getYoutubeVideoURL", () => {
