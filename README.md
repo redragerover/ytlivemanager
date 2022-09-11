@@ -1,6 +1,6 @@
 # ytlivemanager
 
-A simple function `handleYouTubePoll`, to poll a youtube channel for a live stream.
+A function `handleYouTubePoll`, to poll a youtube channel for a live stream. Programatically determine if a YouTube stream is going live
 
 Node 18+
 
@@ -26,3 +26,4 @@ streamGoesOffline // a function to run when stream goes offline
 - Polling will run sometimes if a channel posts a "preview" for an event
 - I have excess stuff in here. I am still planning out what I want to do with the repo.
 - If a stream is chaotic with internet issues, it can ping twice. There is a 40 second double check to prevent most issues with this. But sometimes your streamer gets drunk in Las Vegas, going in and out of casinos restarting his stream and your streamToLive function will hate him
+- Polling runs at a static 49 second intervals. Don't know how much polling is too much, 49 seconds is good for me. Will add dyanmic handling later if I feel like it.
