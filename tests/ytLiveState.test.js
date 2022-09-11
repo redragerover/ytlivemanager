@@ -1,6 +1,6 @@
 import { jest } from "@jest/globals";
 
-import { handleDoubleCheck } from "../ytLiveState";
+import { handleDoubleCheck, handleStreamerIsOn } from "../ytLiveState";
 describe("handleDoubleCheck", () => {
   it("should not call functions when doubleCheckIfOffline is false", () => {
     const actionWhenDoubleCheckIsTrue = jest.fn();
@@ -58,5 +58,23 @@ describe("handleDoubleCheck", () => {
       expect(setStreamIsAlreadyOnline).toHaveBeenCalledTimes(1);
       expect(actionWhenDoubleCheckIsTrue).toHaveBeenCalled();
     }
+  });
+});
+describe("handleStreamerIsOn", () => {
+  it("should call function once stream is determined to be online from offline status", () => {
+    const setStreamIsAlreadyOnline = jest.fn();
+    const setStreamerIsOn = jest.fn();
+    const doubleCheckIfOffline = false;
+    const state = {
+      setStreamIsAlreadyOnline,
+      setStreamerIsOn,
+      doubleCheckIfOffline,
+    };
+    const streamIsLive = jest.fn();
+    const isStreaming = true;
+    handleStreamerIsOn(state, streamIsLive, isStreaming);
+    expect(streamIsLive).toHaveBeenCalled();
+    expect(setStreamerIsOn).toHaveBeenCalledWith(true);
+    expect(setStreamIsAlreadyOnline).toHaveBeenCalledWith(true);
   });
 });
