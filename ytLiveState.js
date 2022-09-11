@@ -1,5 +1,5 @@
 /**
- * handles polling of volatile streams. handles already live -> offlinex if a stream goes offline twice, it is considered to be offline permanently
+ * handles polling of volatile streams. handles already live -> offline if a stream goes offline twice, it is considered to be offline permanently
  * @param {object} state
  * @param {function} actionWhenDoubleCheckIsTrue
  * @returns

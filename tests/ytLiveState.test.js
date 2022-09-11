@@ -37,7 +37,7 @@ describe("handleDoubleCheck", () => {
     expect(setStreamIsAlreadyOnline).toHaveBeenCalledTimes(1);
   });
 
-  it("doubleCheckIfOffline is true and if !isStreaming, then actionWhenDoubleCheckIsTrue is called, then state shouldreflect a stream entering offline status", () => {
+  it("doubleCheckIfOffline is true and if !isStreaming, then actionWhenDoubleCheckIsTrue is called, then state should reflect a stream entering offline status", () => {
     {
       const actionWhenDoubleCheckIsTrue = jest.fn();
       const setDoubleCheckIfOffline = jest.fn();
