@@ -11,7 +11,6 @@ const toSeconds = (seconds) => seconds * 1000;
 
 dotenv.config();
 
-const pollingIntervalTimer = toSeconds(49);
 const getStreamStatus = (streamIsOnline) => {
   if (streamIsOnline) {
     console.log(chalk.white.bgBlack("Stream is online!"));
@@ -20,18 +19,49 @@ const getStreamStatus = (streamIsOnline) => {
   }
 };
 
+async function sleep(millis) {
+  return new Promise((resolve) => setTimeout(resolve, millis));
+}
+/**
+ * @example handleGroupYoutubePoll({identifiers:["dfadfadfdaf"], streamToLive, streamGoesOffline})
+ * handleGroupYoutubePoll calls a group of channelIds to handleYouTubePoll
+ * @param {object} pollConfig
+ * @param {function} pollConfig.streamGoesOffline - handles what happens when stream goes offline
+ * @param {function} pollConfig.streamToLive - handles when stream goes live
+ * @param {[string]} pollConfig.identifiers - a youtube channelId
+ */
+export const handleGroupYoutubePoll = async ({
+  identifiers,
+  streamGoesOffline,
+  streamToLive,
+}) => {
+  if (typeof identifiers !== "object" && !identifiers.length) {
+    console.log("no identifiers passed");
+    return;
+  }
+  await sleep(toSeconds(30));
+  for (const channelId of identifiers) {
+    console.group("group poll");
+    handleYouTubePoll(
+      { identifier: channelId, streamGoesOffline, streamToLive },
+      toSeconds(125)
+    );
+  }
+  console.groupEnd();
+};
+
 /**
  * handleYouTubePoll.
  *
  * @param {function} streamGoesOffline - handles what happens when stream goes offline
  * @param {function} streamToLive - handles when stream goes live
  * @param {string} identifier - a youtube channelId
+ * @param {int} pollingIntervalTimer - ms value of how frequent a poll should be checked
  */
-export const handleYouTubePoll = ({
-  identifier,
-  streamGoesOffline,
-  streamToLive,
-}) => {
+export const handleYouTubePoll = (
+  { identifier, streamGoesOffline, streamToLive },
+  pollingIntervalTimer = toSeconds(49)
+) => {
   if (!identifier) {
     console.log("identifier undefined");
     return;
