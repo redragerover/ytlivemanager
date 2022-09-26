@@ -1,4 +1,5 @@
 import fetch from "node-fetch";
+import { parse } from "node-html-parser";
 
 export const getYoutubeVideoURL = (htmlString) => {
   const vidURLRegExp = new RegExp(/u0026v=(.*?)\"/);
@@ -23,8 +24,11 @@ const getLiveVideoURLFromChannelID = async (channelID) => {
     return { canonicalURL: "", isStreaming: false };
   }
   const url = getYoutubeVideoURL(await response.text());
-  const canonicalURL = url || "PA is offline";
-  const isStreaming = !!url;
+  const canonicalURL = url || "";
+  const html = parse(text);
+  const canonicalURLTag = html.querySelector("link[rel=canonical]");
+  const hasLinkAttr = canonicalURLTag && !!canonicalURLTag.getAttribute("href");
+  const isStreaming = !!url || hasLinkAttr;
   return { canonicalURL, isStreaming };
 };
 

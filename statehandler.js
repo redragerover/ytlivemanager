@@ -8,7 +8,8 @@ import {
 } from "./ytLiveState.js";
 
 const toSeconds = (seconds) => seconds * 1000;
-
+const nodeArguments = process.argv;
+console.log({ nodeArguments });
 dotenv.config();
 
 const getStreamStatus = (streamIsOnline) => {
@@ -71,7 +72,7 @@ export const handleYouTubePoll = (
   console.log(chalk.green("ytlivemanager has started"));
   const state = {
     streamerIsOn: false,
-    streamIsAlreadyOnline: false,
+    streamIsAlreadyOnline: nodeArguments.includes("skip"),
     doubleCheckIfOffline: false,
     intervalCounter: 0,
     setStreamerIsOn(val) {
@@ -111,7 +112,7 @@ export const handleYouTubePoll = (
 
         handleStreamerIsOn(
           state,
-          () => streamToLive(canonicalURL),
+          () => streamToLive(canonicalURL || ""),
           isStreaming,
           1000 * 20
         );
