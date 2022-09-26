@@ -25,7 +25,7 @@ const getLiveVideoURLFromChannelID = async (channelID) => {
   }
   const url = getYoutubeVideoURL(await response.text());
   const canonicalURL = url || "";
-  const html = parse(text);
+  const html = parse(await response.text());
   const canonicalURLTag = html.querySelector("link[rel=canonical]");
   const hasLinkAttr = canonicalURLTag && !!canonicalURLTag.getAttribute("href");
   const isStreaming = !!url || hasLinkAttr;
