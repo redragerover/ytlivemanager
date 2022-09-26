@@ -20,9 +20,9 @@ const handleDoubleCheck = (state, actionWhenDoubleCheckIsTrue, isStreaming) => {
     setDoubleCheckIfOffline(false);
     return;
   }
-  const interval = setTimeout(1000 * 60 * 3, () => {
+  const interval = setTimeout(() => {
     waited3Minutes = true;
-  });
+  }, 1000 * 60 * 3);
   if (interval && !isStreaming && !waited3Minutes) {
     return;
   }
