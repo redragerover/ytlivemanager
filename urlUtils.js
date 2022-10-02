@@ -28,8 +28,9 @@ const getLiveVideoURLFromChannelID = async (channelID) => {
   const canonicalURL = url || "";
   const html = parse(text);
   const canonicalURLTag = html.querySelector("link[rel=canonical]");
-  const hasLinkAttr = canonicalURLTag && !!canonicalURLTag.getAttribute("href");
-  const isStreaming = !!url || hasLinkAttr;
+  const hasLinkAttr =
+    !!canonicalURLTag && !!canonicalURLTag.getAttribute("href");
+  const isStreaming = !!url && hasLinkAttr;
   return { canonicalURL, isStreaming };
 };
 
