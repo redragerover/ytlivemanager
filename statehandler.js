@@ -9,7 +9,6 @@ import {
 
 const toSeconds = (seconds) => seconds * 1000;
 const nodeArguments = process.argv;
-console.log({ nodeArguments });
 dotenv.config();
 
 const getStreamStatus = (streamIsOnline) => {
@@ -41,14 +40,15 @@ export const handleGroupYoutubePoll = async ({
     return;
   }
   await sleep(toSeconds(30));
+  const options = {
+    enableLogs: false,
+  };
   for (const channelId of identifiers) {
-    console.group("group poll");
     handleYouTubePoll(
-      { identifier: channelId, streamGoesOffline, streamToLive },
-      toSeconds(125)
+      { identifier: channelId, streamGoesOffline, streamToLive, options },
+      toSeconds(50)
     );
   }
-  console.groupEnd();
 };
 
 /**
@@ -58,9 +58,16 @@ export const handleGroupYoutubePoll = async ({
  * @param {function} streamToLive - handles when stream goes live
  * @param {string} identifier - a youtube channelId
  * @param {int} pollingIntervalTimer - ms value of how frequent a poll should be checked
+ * @param {object} options - options
+ * @param {boolean} options.logs - disable logs
  */
 export const handleYouTubePoll = (
-  { identifier, streamGoesOffline, streamToLive },
+  {
+    identifier,
+    streamGoesOffline,
+    streamToLive,
+    options = { enableLogs: true },
+  },
   pollingIntervalTimer = toSeconds(49)
 ) => {
   if (!identifier) {
@@ -88,7 +95,7 @@ export const handleYouTubePoll = (
   };
 
   const handleInterval = async () => {
-    if (state.intervalCounter > 0) {
+    if (state.intervalCounter > 0 && options.enableLogs) {
       state.intervalCounter = 0;
       console.clear();
       getStreamStatus(state.streamIsAlreadyOnline);
@@ -112,7 +119,7 @@ export const handleYouTubePoll = (
 
         handleStreamerIsOn(
           state,
-          () => streamToLive(canonicalURL || ""),
+          () => streamToLive(canonicalURL),
           isStreaming,
           1000 * 20
         );

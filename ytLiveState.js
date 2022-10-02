@@ -1,4 +1,3 @@
-let waited3Minutes = false;
 /**
  * handles polling of volatile streams. handles already live -> offline if a stream goes offline twice, it is considered to be offline permanently
  * @param {object} state
@@ -10,7 +9,6 @@ const handleDoubleCheck = (state, actionWhenDoubleCheckIsTrue, isStreaming) => {
 
   if (!state.doubleCheckIfOffline) {
     // check if a stream returned an  offline status at previous point in interval
-    waited3Minutes = false;
     return;
   }
 
@@ -20,13 +18,7 @@ const handleDoubleCheck = (state, actionWhenDoubleCheckIsTrue, isStreaming) => {
     setDoubleCheckIfOffline(false);
     return;
   }
-  const interval = setTimeout(() => {
-    waited3Minutes = true;
-  }, 1000 * 60 * 3);
-  if (interval && !isStreaming && !waited3Minutes) {
-    return;
-  }
-  if (!isStreaming && waited3Minutes) {
+  if (!isStreaming) {
     //handles a stream switching to offline
     setDoubleCheckIfOffline(false);
     setStreamIsAlreadyOnline(false);

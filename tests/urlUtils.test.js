@@ -52,8 +52,8 @@ describe("getLiveVideoURLFromChannelID", () => {
   it("if the youtube request  fails, it should return isStreaming false and a message", async () => {
     const result = await getLiveVideoURLFromChannelID("ff1234567");
     expect(result).toMatchObject({
-      canonicalURL: "PA is offline",
-      isStreaming: false,
+      canonicalURL: "",
+      isStreaming: null,
     });
   });
   // get node-fetch mock to work
