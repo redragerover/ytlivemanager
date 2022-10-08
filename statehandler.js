@@ -9,6 +9,9 @@ import {
 
 const toSeconds = (seconds) => seconds * 1000;
 const nodeArguments = process.argv;
+const isTestingInProd = nodeArguments.includes("test");
+
+const postIntervalDelay = isTestingInProd ? 1000 * 60 : 1000 * 60 * 15; //  15 minutes to hold off rechecking
 dotenv.config();
 
 const getStreamStatus = (streamIsOnline) => {
@@ -39,14 +42,14 @@ export const handleGroupYoutubePoll = async ({
     console.log("no identifiers passed");
     return;
   }
-  await sleep(toSeconds(30));
   const options = {
     enableLogs: false,
   };
   for (const channelId of identifiers) {
+    await sleep(toSeconds(45));
     handleYouTubePoll(
       { identifier: channelId, streamGoesOffline, streamToLive, options },
-      toSeconds(50)
+      toSeconds(45 * identifiers.length)
     );
   }
 };
@@ -68,7 +71,7 @@ export const handleYouTubePoll = (
     streamToLive,
     options = { enableLogs: true },
   },
-  pollingIntervalTimer = toSeconds(49)
+  pollingIntervalTimer = isTestingInProd ? toSeconds(14) : toSeconds(49)
 ) => {
   if (!identifier) {
     console.log("identifier undefined");
@@ -89,7 +92,6 @@ export const handleYouTubePoll = (
       state.streamIsAlreadyOnline = val;
     },
     setDoubleCheckIfOffline(val) {
-      console.log(state.doubleCheckIfOffline);
       state.doubleCheckIfOffline = val;
     },
   };
@@ -106,6 +108,7 @@ export const handleYouTubePoll = (
     await getLiveVideoURLFromChannelID(ytChannelId)
       .then(({ isStreaming, canonicalURL }) => {
         if (state.streamerIsOn) {
+          console.log("fetching is paused");
           return;
         }
         handleDoubleCheck(state, streamGoesOffline);
@@ -121,7 +124,7 @@ export const handleYouTubePoll = (
           state,
           () => streamToLive(canonicalURL),
           isStreaming,
-          1000 * 20
+          postIntervalDelay
         );
         return;
       })
