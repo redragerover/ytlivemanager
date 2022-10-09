@@ -6,7 +6,7 @@ Node 18+
 
 # install
 
-`npm i redragerover/ytlivemanager#alpha`
+`npm i redragerover/ytlivemanager`
 
 ## use
 example being used in a discord bot
@@ -20,10 +20,8 @@ streamToLive, // a function to run when a stream goes live
 streamGoesOffline // a function to run when stream goes offline
     })
 ```
+### How does the transition from stream online to offline work?
+This is handled in `ytLiveState.js` in `handleDoubleCheckIfOffline`
+If the stream goes offline the state handler checks again on the next ping. If the next ping the stream is offline it will pause pinging for 12 minutes and check again. If that next ping is offline it'll check one last time, and if that ping is offline it'll return the stream as an offline status entirely. So that's 4 checks. It should theoretically be impossible to provide a false positive 4 times in a row 
 
-### Known issues
-- Polling from `getLiveVideoURLFromChannelID` in `urlUtils.js` provides reliable data, but I think it can be improved. I am no RegExp God.
-- Polling will run sometimes if a channel posts a "preview" for an event
-- I have excess stuff in here. I am still planning out what I want to do with the repo.
-- If a stream is chaotic with internet issues, it can ping twice. There is a 40 second double check to prevent most issues with this. But sometimes your streamer gets drunk in Las Vegas, going in and out of casinos restarting his stream and your streamToLive function will hate him
-- Polling runs at a static 49 second intervals. Don't know how much polling is too much, 49 seconds is good for me. Will add dyanmic handling later if I feel like it.
+Currently the waiting period for fetching to verify false positives is 12 minutes. I believe that works well for accuracy. Will make this value configurable from the options object though
