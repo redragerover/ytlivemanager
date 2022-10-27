@@ -11,7 +11,7 @@ const toSeconds = (seconds) => seconds * 1000;
 const nodeArguments = process.argv;
 const isTestingInProd = nodeArguments.includes("test");
 
-const postIntervalDelay = isTestingInProd ? 1000 * 60 : 1000 * 60 * 15; //  15 minutes to hold off rechecking
+const postIntervalDelay = isTestingInProd ? 1000 * 60 : 1000 * 60 * 120; //  x minutes to hold off rechecking
 dotenv.config();
 
 const getStreamStatus = (streamIsOnline) => {
@@ -71,7 +71,7 @@ export const handleYouTubePoll = (
     streamToLive,
     options = { enableLogs: true },
   },
-  pollingIntervalTimer = isTestingInProd ? toSeconds(14) : toSeconds(49)
+  pollingIntervalTimer = isTestingInProd ? toSeconds(14) : toSeconds(79)
 ) => {
   if (!identifier) {
     console.log("identifier undefined");
