@@ -11,7 +11,6 @@ const toSeconds = (seconds) => seconds * 1000;
 const nodeArguments = process.argv;
 const isTestingInProd = nodeArguments.includes("test");
 
-const postIntervalDelay = isTestingInProd ? 1000 * 60 : 1000 * 60 * 120; //  x minutes to hold off rechecking
 dotenv.config();
 
 const getStreamStatus = (streamIsOnline) => {
@@ -69,7 +68,7 @@ export const handleYouTubePoll = (
     identifier,
     streamGoesOffline,
     streamToLive,
-    options = { enableLogs: true },
+    options = { enableLogs: true, postIntervalDelayCustom: 0 },
   },
   pollingIntervalTimer = isTestingInProd ? toSeconds(14) : toSeconds(79)
 ) => {
@@ -77,6 +76,12 @@ export const handleYouTubePoll = (
     console.log("identifier undefined");
     return;
   }
+
+  const postIntervalDelay = isTestingInProd
+    ? 1000 * 60
+    : options.postIntervalDelayCustom
+    ? options.postIntervalDelayCustom
+    : 1000 * 60 * 120; //  x minutes to hold off rechecking
   const ytChannelId = identifier;
 
   console.log(chalk.green("ytlivemanager has started"));
