@@ -49,5 +49,15 @@ const twitterUrlPurifier = (message) => {
   }
   return { purifiedTwitterUrl };
 };
+export const UTM_Purifier = (message) => {
+  let utmFreeUrl = "";
+
+  const utm_purifiedRegExp = new RegExp(/(\?|&)[a-zA-Z].*=[^\s]*utm_\w+=(.*)/);
+  const urlToxicParams = utm_purifiedRegExp.exec(message);
+  if (urlToxicParams) {
+    utmFreeUrl = message.replace(utm_purifiedRegExp, "");
+  }
+  return utmFreeUrl;
+};
 
 export { getLiveVideoURLFromChannelID, twitterUrlPurifier };

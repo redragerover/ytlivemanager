@@ -2,6 +2,7 @@ import {
   twitterUrlPurifier,
   getLiveVideoURLFromChannelID,
   getYoutubeVideoURL,
+  UTM_Purifier,
 } from "../urlUtils";
 
 describe("twitterUrlPurifier", () => {
@@ -67,5 +68,17 @@ describe("getYoutubeVideoURL", () => {
       `/[a-zA-Z]{0,3}twitter.com/) u0026v=rUxyKA_-grg","targ`
     );
     expect(result).toBe("https://www.youtube.com/watch?v=rUxyKA_-grg");
+  });
+});
+
+describe("UTM_Purifier", () => {
+  it("should remove URL parameters that contain UTM_", () => {
+    const result = UTM_Purifier(
+      "https://www.ibtimes.sg/your-twitter-account-active-twitter-suspends-487000-accounts-877000-are-deactivated-elon-musk-67583?utm_source=social&utm_medium=twitter&utm_campaign=/your-twitter-account-active-twitter-suspends-487000-accounts-877000-are-deactivated-elon-musk-67583"
+    );
+
+    expect(result).toBe(
+      "https://www.ibtimes.sg/your-twitter-account-active-twitter-suspends-487000-accounts-877000-are-deactivated-elon-musk-67583"
+    );
   });
 });
