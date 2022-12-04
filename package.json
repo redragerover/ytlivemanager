@@ -16,6 +16,7 @@
     "node-fetch": "^3.2.4",
     "node-html-parser": "^5.3.3",
     "prettier": "^2.7.1",
+    "rumblemanager": "github:redragerover/rumblemanager",
     "winston": "^3.7.2",
     "winston-daily-rotate-file": "^4.6.1"
   },
