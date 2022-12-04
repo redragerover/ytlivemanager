@@ -61,7 +61,8 @@ export const handleGroupYoutubePoll = async ({
  * @param {string} identifier - a youtube channelId
  * @param {int} pollingIntervalTimer - ms value of how frequent a poll should be checked
  * @param {object} options - options
- * @param {boolean} options.logs - disable logs
+ * @param {boolean} options.enableLogs - disable logs
+ * @param {int} options.postIntervalDelayCustom - override interval to poll (milliseconds)
  */
 export const handleYouTubePoll = (
   {

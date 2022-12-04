@@ -17,7 +17,8 @@ example being used in a discord bot
 handleYouTubePoll({
 identifier, // a channel ID for a YouTube channel. Looks like 'fAFJcchSAFnASfq0'
 streamToLive, // a function to run when a stream goes live
-streamGoesOffline // a function to run when stream goes offline
+streamGoesOffline, // a function to run when stream goes offline
+{ enableLogs: false } // options for the poll
     })
 ```
 ### How does the transition from stream online to offline work?

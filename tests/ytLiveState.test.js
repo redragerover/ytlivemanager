@@ -42,10 +42,12 @@ describe("handleDoubleCheck", () => {
       const actionWhenDoubleCheckIsTrue = jest.fn();
       const setDoubleCheckIfOffline = jest.fn();
       const setStreamIsAlreadyOnline = jest.fn();
+      const setStreamerIsOn = jest.fn();
       const state = {
         doubleCheckIfOffline: true,
         setDoubleCheckIfOffline,
         setStreamIsAlreadyOnline,
+        setStreamerIsOn,
       };
 
       const isStreaming = false;

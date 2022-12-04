@@ -33,23 +33,22 @@ const getLiveVideoURLFromChannelID = async (channelID) => {
 };
 
 const twitterUrlPurifier = (message) => {
-  let purifiedTwitterUrl = "";
   const twitterRegExp = new RegExp(/[a-zA-Z]{0,3}twitter.com/);
   const hasTrecherousURLTrackerRegExp = new RegExp(/(\?|&)[a-zA-Z].*=[^\s]*/);
-  if (!twitterRegExp.test(message)) {
-    return { purifiedTwitterUrl };
-  }
-  if (!hasTrecherousURLTrackerRegExp.test(message)) {
-    return { purifiedTwitterUrl };
-  }
-  purifiedTwitterUrl = message.replace(hasTrecherousURLTrackerRegExp, "");
-
-  if (message === purifiedTwitterUrl) {
+  const replacementMessage = message.replace(hasTrecherousURLTrackerRegExp, "");
+  if (
+    !twitterRegExp.test(message) ||
+    message === replacementMessage ||
+    !hasTrecherousURLTrackerRegExp.test(message) ||
+    message.includes("/search?") ||
+    message.includes("/spaces/")
+  ) {
     return { purifiedTwitterUrl: "" };
   }
+  const purifiedTwitterUrl = message.replace(hasTrecherousURLTrackerRegExp, "");
   return { purifiedTwitterUrl };
 };
-export const UTM_Purifier = (message) => {
+const UTM_Purifier = (message) => {
   let utmFreeUrl = "";
 
   const utm_purifiedRegExp = new RegExp(/(\?|&)[a-zA-Z].*=[^\s]*utm_\w+=(.*)/);
@@ -60,4 +59,4 @@ export const UTM_Purifier = (message) => {
   return utmFreeUrl;
 };
 
-export { getLiveVideoURLFromChannelID, twitterUrlPurifier };
+export { getLiveVideoURLFromChannelID, twitterUrlPurifier, UTM_Purifier };

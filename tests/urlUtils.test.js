@@ -33,6 +33,26 @@ describe("twitterUrlPurifier", () => {
       purifiedTwitterUrl: "",
     });
   });
+  it("should return empty strings", () => {
+    const result = twitterUrlPurifier("");
+    expect(result).toMatchObject({
+      purifiedTwitterUrl: "",
+    });
+  });
+  it("should not try to parse if the string includes search or spaces", () => {
+    const result = twitterUrlPurifier(
+      "https://twitter.com/search?q=%22Dark%20Brandon%22&src=trend_click&vertical=trends"
+    );
+    const result2 = twitterUrlPurifier(
+      "https://twitter.com/i/spaces/1OwxWwDyXnQxQ?s=20"
+    );
+    expect(result).toMatchObject({
+      purifiedTwitterUrl: "",
+    });
+    expect(result2).toMatchObject({
+      purifiedTwitterUrl: "",
+    });
+  });
   it("should work with twitter urls inside of a paragraph of text while returning the text", () => {
     const result = twitterUrlPurifier(
       `and stuff here https://VXCtwitter.com/denverchannel/status/1565189956892430336?jfd=iafjaidfj33  stuff here`
@@ -54,7 +74,7 @@ describe("getLiveVideoURLFromChannelID", () => {
     const result = await getLiveVideoURLFromChannelID("ff1234567");
     expect(result).toMatchObject({
       canonicalURL: "",
-      isStreaming: null,
+      isStreaming: false,
     });
   });
   // get node-fetch mock to work

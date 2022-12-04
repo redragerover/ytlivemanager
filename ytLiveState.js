@@ -31,7 +31,8 @@ const handleDoubleCheck = (state, actionWhenDoubleCheckIsTrue, isStreaming) => {
     setStreamerIsOn(true);
     setStreamIsAlreadyOnline(true);
     setDoubleCheckIfOffline(false);
-    setTimeout(() => setStreamerIsOn(false), 1000 * 60 * 12); // stop checking for x minutes
+    !process.argv.includes("status") &&
+      setTimeout(() => setStreamerIsOn(false), 1000 * 60 * 12); // stop checking for x minutes
     return;
   }
   if (!isStreaming && rechecked) {
