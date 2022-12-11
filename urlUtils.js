@@ -2,7 +2,7 @@ import fetch from "node-fetch";
 import parse from "node-html-parser";
 /**
  *
- * @param {string} channelID
+ * @param {HTMLElement} videoSelector
  * @returns {string}
  */
 const getRumbleStreamURLFromSelector = (videoSelector) => {
@@ -16,7 +16,6 @@ const getRumbleStreamURLFromSelector = (videoSelector) => {
 /**
  * returns the live stream status for a Rumble Channel
  * @param {string} channelID
- * @param {object} streamStatus
  */
 export const getRumbleStreamLiveStatus = async (channelID) => {
   const text = await fetch(`https://rumble.com/c/${channelID}`)
@@ -32,10 +31,10 @@ export const getRumbleStreamLiveStatus = async (channelID) => {
 };
 /**
  *
- * @param {string} channelID
- * @returns
+ * @param {string} htmlString
+ * @returns "https://youtube.com/watch?v=xxxxxx"|""
  */
-export const getLiveURLFromHTMLString = (htmlString) => {
+const getYoutubeStreamURLfromHTMLString = (htmlString) => {
   const vidURLRegExp = new RegExp(/u0026v=(.*?)\"/);
   const regExpResult = vidURLRegExp.exec(htmlString);
   if (regExpResult) {
@@ -53,8 +52,14 @@ export const getLiveURLFromHTMLString = (htmlString) => {
 /**
  * returns the live stream status for a youtube channel.
  * @param {string} channelID
+ *
+ * @typedef {object} LiveStatus
+ * @property {string} canonicalURL - the live stream URL
+ * @property {boolean} isStreaming - the live state of the youtube channel
+ *
+ * @returns Promise{LiveStatus} - the live state of the youtube stream
  */
-const getLiveStatusFromChannelID = async (channelID) => {
+export const getYoutubeLiveStatusFromChannelID = async (channelID) => {
   const response = await fetch(
     `https://youtube.com/channel/${channelID}/live`
   ).catch((err) => console.log("request-failed: ", err));
@@ -62,7 +67,7 @@ const getLiveStatusFromChannelID = async (channelID) => {
     return { canonicalURL: "", isStreaming: false };
   }
   const text = await response.text();
-  const url = getLiveURLFromHTMLString(text);
+  const url = getYoutubeStreamURLfromHTMLString(text);
   const canonicalURL = url || "";
   const isStreaming =
     !!canonicalURL &&
@@ -99,10 +104,10 @@ const twitterUrlPurifier = (message) => {
  *
  * @param {string} message
  */
-const UTM_Purifier = (message) => {
-  const urlInMessage = message.match(/\bhttps?:\/\/\S+/gi);
+export const UTM_Purifier = (message) => {
+  const urlsInMessage = message.match(/\bhttps?:\/\/\S+/gi);
   let stripped;
-  if (!urlInMessage.length) {
+  if (!urlsInMessage.length) {
     return "";
   }
   const searchPattern = new RegExp(
@@ -115,8 +120,8 @@ const UTM_Purifier = (message) => {
       "=[^&#]*)",
     "ig"
   );
-  for (const urlIndex in urlInMessage) {
-    const url = urlInMessage[urlIndex];
+  for (const urlIndex in urlsInMessage) {
+    const url = urlsInMessage[urlIndex];
     const queryStringIndex = url.indexOf("?");
     if (url.search(searchPattern) > queryStringIndex) {
       stripped = message.replace(replacePattern, "");
@@ -128,10 +133,4 @@ const UTM_Purifier = (message) => {
     }
   }
   return stripped;
-};
-export {
-  getRumbleStreamURLFromSelector,
-  getLiveStatusFromChannelID,
-  twitterUrlPurifier,
-  UTM_Purifier,
 };
