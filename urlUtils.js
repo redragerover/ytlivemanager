@@ -1,13 +1,13 @@
 import fetch from "node-fetch";
-import parse from "node-html-parser";
+import Parser from "node-html-parser";
 /**
  *
  * @param {HTMLElement} videoSelector
- * @returns {string}
+ * @returns {string} "https://rumble.com/xxxxxx" | ""
  */
 const getRumbleStreamURLFromSelector = (videoSelector) => {
   if (!videoSelector) {
-    return liveEnums.isNotLive;
+    return "";
   }
   const anchor = videoSelector.parentNode.parentNode.querySelector("a");
   const canonicalURL = anchor.attrs.href;
@@ -16,7 +16,7 @@ const getRumbleStreamURLFromSelector = (videoSelector) => {
 /**
  *
  * @param {string} htmlString
- * @returns "https://youtube.com/watch?v=xxxxxx"|""
+ * @returns "https://youtube.com/watch?v=xxxxxx" | ""
  */
 const getYoutubeStreamURLfromHTMLString = (htmlString) => {
   const vidURLRegExp = new RegExp(/u0026v=(.*?)\"/);
@@ -33,6 +33,7 @@ const getYoutubeStreamURLfromHTMLString = (htmlString) => {
   }
   return "";
 };
+
 /**
  * returns the live stream status for a youtube channel.
  * @param {string} channelID
@@ -46,7 +47,7 @@ const getYoutubeStreamURLfromHTMLString = (htmlString) => {
 export const getYoutubeLiveStatusFromChannelID = async (channelID) => {
   const response = await fetch(
     `https://youtube.com/channel/${channelID}/live`
-  ).catch((err) => console.log("request-failed: ", err));
+  ).catch((err) => console.warn("request-failed: ", err));
   if (!response) {
     return { canonicalURL: "", isStreaming: false };
   }
@@ -63,12 +64,18 @@ export const getYoutubeLiveStatusFromChannelID = async (channelID) => {
 /**
  * returns the live stream status for a Rumble Channel
  * @param {string} channelID
+ 
+ * @typedef {object} LiveStatus
+ * @property {string} canonicalURL - the live stream URL
+ * @property {boolean} isStreaming - the live state of the youtube channel
+ *
+ * @returns Promise{LiveStatus} - the live state of the youtube stream
  */
 export const getRumbleStreamLiveStatusFromChannelID = async (channelID) => {
   const text = await fetch(`https://rumble.com/c/${channelID}`)
     .then((res) => res.text())
     .catch(() => liveEnums.isNotLive);
-  const root = parse(text);
+  const root = Parser.parse(text);
   const videoSelector = root.querySelector(".video-item--live");
   const canonicalURL = getRumbleStreamURLFromSelector(videoSelector);
   return {
@@ -98,10 +105,10 @@ export const twitterUrlPurifier = (message) => {
 };
 
 /**
- * return a stripped string if the message is containing a url and UTM parameters
+ * provides a stripped string if the message is containing a url and UTM parameters
  * @example
- * UTM_Purifier("hello https://www.twitter.com/RekietaLaw/status/343141341341?utm_source=faijf139j1f&buffalo_chicken=true")
- * // returns: "hello https://www.twitter.com/RekietaLaw/status/343141341341?buffalo_chicken=true"
+ * UTM_Purifier("hello https://www.twitter.com/RekietaLaw?utm_source=faijf139j1f&buffalo_chicken=true")
+ * @returns "hello https://www.twitter.com/RekietaLaw?buffalo_chicken=true"
  *
  * @param {string} message
  */
