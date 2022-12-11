@@ -108,6 +108,9 @@ export const twitterUrlPurifier = (message) => {
 export const UTM_Purifier = (message) => {
   const urlsInMessage = message.match(/\bhttps?:\/\/\S+/gi);
   let stripped;
+  if (!urlsInMessage) {
+    return "";
+  }
   if (!urlsInMessage.length) {
     return "";
   }
