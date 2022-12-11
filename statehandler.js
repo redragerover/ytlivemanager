@@ -1,12 +1,15 @@
 import dotenv from "dotenv";
 import chalk from "chalk";
-import { getLiveVideoURLFromChannelID } from "./urlUtils.js";
+import {
+  getRumbleStreamLiveStatus,
+  getYoutubeLiveStatusFromChannelID,
+} from "./urlUtils.js";
 import {
   handleDoubleCheck,
   handleStreameIsRemainingOnline,
   handleStreamerIsOn,
 } from "./ytLiveState.js";
-import { getRumbleChannelLiveStatus } from "rumblemanager";
+
 const toSeconds = (seconds) => seconds * 1000;
 const nodeArguments = process.argv;
 const isTestingInProd = nodeArguments.includes("test");
@@ -111,7 +114,7 @@ export const handleYouTubePoll = (
 
     state.intervalCounter++;
 
-    await getLiveVideoURLFromChannelID(ytChannelId)
+    await getYoutubeLiveStatusFromChannelID(ytChannelId)
       .then(({ isStreaming, canonicalURL }) => {
         if (state.streamerIsOn) {
           console.log("fetching is paused");
@@ -196,7 +199,7 @@ export const handleRumblePoll = (
 
     state.intervalCounter++;
 
-    await getRumbleChannelLiveStatus(identifier)
+    await getRumbleStreamLiveStatus(identifier)
       .then(({ isStreaming, canonicalURL }) => {
         if (state.streamerIsOn) {
           console.log("fetching is paused");
