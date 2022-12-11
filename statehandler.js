@@ -1,7 +1,7 @@
 import dotenv from "dotenv";
 import chalk from "chalk";
 import {
-  getRumbleStreamLiveStatus,
+  getRumbleStreamLiveStatusFromChannelID,
   getYoutubeLiveStatusFromChannelID,
 } from "./urlUtils.js";
 import {
@@ -199,7 +199,7 @@ export const handleRumblePoll = (
 
     state.intervalCounter++;
 
-    await getRumbleStreamLiveStatus(identifier)
+    await getRumbleStreamLiveStatusFromChannelID(identifier)
       .then(({ isStreaming, canonicalURL }) => {
         if (state.streamerIsOn) {
           console.log("fetching is paused");

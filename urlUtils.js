@@ -14,22 +14,6 @@ const getRumbleStreamURLFromSelector = (videoSelector) => {
   return `https://rumble.com${canonicalURL}`;
 };
 /**
- * returns the live stream status for a Rumble Channel
- * @param {string} channelID
- */
-export const getRumbleStreamLiveStatus = async (channelID) => {
-  const text = await fetch(`https://rumble.com/c/${channelID}`)
-    .then((res) => res.text())
-    .catch(() => liveEnums.isNotLive);
-  const root = parse(text);
-  const videoSelector = root.querySelector(".video-item--live");
-  const canonicalURL = getRumbleStreamURLFromSelector(videoSelector);
-  return {
-    canonicalURL,
-    isStreaming: !!canonicalURL,
-  };
-};
-/**
  *
  * @param {string} htmlString
  * @returns "https://youtube.com/watch?v=xxxxxx"|""
@@ -75,11 +59,28 @@ export const getYoutubeLiveStatusFromChannelID = async (channelID) => {
     !text.includes("Scheduled for");
   return { canonicalURL, isStreaming };
 };
+
+/**
+ * returns the live stream status for a Rumble Channel
+ * @param {string} channelID
+ */
+export const getRumbleStreamLiveStatusFromChannelID = async (channelID) => {
+  const text = await fetch(`https://rumble.com/c/${channelID}`)
+    .then((res) => res.text())
+    .catch(() => liveEnums.isNotLive);
+  const root = parse(text);
+  const videoSelector = root.querySelector(".video-item--live");
+  const canonicalURL = getRumbleStreamURLFromSelector(videoSelector);
+  return {
+    canonicalURL,
+    isStreaming: !!canonicalURL,
+  };
+};
 /**
  * removes the t and s parameter from twitter urls when sharing
  * @param {string} message
  */
-const twitterUrlPurifier = (message) => {
+export const twitterUrlPurifier = (message) => {
   const twitterRegExp = new RegExp(/[a-zA-Z]{0,3}twitter.com/);
   const hasTrecherousURLTrackerRegExp = new RegExp(/(\?|&)[a-zA-Z].*=[^\s]*/);
   const replacementMessage = message.replace(hasTrecherousURLTrackerRegExp, "");
