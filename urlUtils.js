@@ -1,6 +1,41 @@
 import fetch from "node-fetch";
-
-export const getYoutubeVideoURL = (htmlString) => {
+import parse from "node-html-parser";
+/**
+ *
+ * @param {string} channelID
+ * @returns {string}
+ */
+const getRumbleStreamURLFromSelector = (videoSelector) => {
+  if (!videoSelector) {
+    return liveEnums.isNotLive;
+  }
+  const anchor = videoSelector.parentNode.parentNode.querySelector("a");
+  const canonicalURL = anchor.attrs.href;
+  return `https://rumble.com${canonicalURL}`;
+};
+/**
+ * returns the live stream status for a Rumble Channel
+ * @param {string} channelID
+ * @param {object} streamStatus
+ */
+export const getRumbleStreamLiveStatus = async (channelID) => {
+  const text = await fetch(`https://rumble.com/c/${channelID}`)
+    .then((res) => res.text())
+    .catch(() => liveEnums.isNotLive);
+  const root = parse(text);
+  const videoSelector = root.querySelector(".video-item--live");
+  const canonicalURL = getRumbleStreamURLFromSelector(videoSelector);
+  return {
+    canonicalURL,
+    isStreaming: !!canonicalURL,
+  };
+};
+/**
+ *
+ * @param {string} channelID
+ * @returns
+ */
+export const getLiveURLFromHTMLString = (htmlString) => {
   const vidURLRegExp = new RegExp(/u0026v=(.*?)\"/);
   const regExpResult = vidURLRegExp.exec(htmlString);
   if (regExpResult) {
@@ -15,7 +50,11 @@ export const getYoutubeVideoURL = (htmlString) => {
   }
   return "";
 };
-const getLiveVideoURLFromChannelID = async (channelID) => {
+/**
+ * returns the live stream status for a youtube channel.
+ * @param {string} channelID
+ */
+const getLiveStatusFromChannelID = async (channelID) => {
   const response = await fetch(
     `https://youtube.com/channel/${channelID}/live`
   ).catch((err) => console.log("request-failed: ", err));
@@ -23,7 +62,7 @@ const getLiveVideoURLFromChannelID = async (channelID) => {
     return { canonicalURL: "", isStreaming: false };
   }
   const text = await response.text();
-  const url = getYoutubeVideoURL(text);
+  const url = getLiveURLFromHTMLString(text);
   const canonicalURL = url || "";
   const isStreaming =
     !!canonicalURL &&
@@ -31,7 +70,10 @@ const getLiveVideoURLFromChannelID = async (channelID) => {
     !text.includes("Scheduled for");
   return { canonicalURL, isStreaming };
 };
-
+/**
+ * removes the t and s parameter from twitter urls when sharing
+ * @param {string} message
+ */
 const twitterUrlPurifier = (message) => {
   const twitterRegExp = new RegExp(/[a-zA-Z]{0,3}twitter.com/);
   const hasTrecherousURLTrackerRegExp = new RegExp(/(\?|&)[a-zA-Z].*=[^\s]*/);
@@ -48,15 +90,48 @@ const twitterUrlPurifier = (message) => {
   const purifiedTwitterUrl = message.replace(hasTrecherousURLTrackerRegExp, "");
   return { purifiedTwitterUrl };
 };
+
+/**
+ * return a stripped string if the message is containing a url and UTM parameters
+ * @example
+ * UTM_Purifier("hello https://www.twitter.com/RekietaLaw/status/343141341341?utm_source=faijf139j1f&buffalo_chicken=true")
+ * // returns: "hello https://www.twitter.com/RekietaLaw/status/343141341341?buffalo_chicken=true"
+ *
+ * @param {string} message
+ */
 const UTM_Purifier = (message) => {
-  let utmFreeUrl = "";
-
-  const utm_purifiedRegExp = new RegExp(/(\?|&)[a-zA-Z].*=[^\s]*utm_\w+=(.*)/);
-  const urlToxicParams = utm_purifiedRegExp.exec(message);
-  if (urlToxicParams) {
-    utmFreeUrl = message.replace(utm_purifiedRegExp, "");
+  const urlInMessage = message.match(/\bhttps?:\/\/\S+/gi);
+  let stripped;
+  if (!urlInMessage.length) {
+    return "";
   }
-  return utmFreeUrl;
+  const searchPattern = new RegExp(
+    "utm_|stm_|clid|_hs|icid|igshid|mc_|mkt_tok|yclid|_openstat|wicked|otc|oly_|rb_clickid|soc_|cvid|oicd",
+    "i"
+  );
+  const replacePattern = new RegExp(
+    "([?&]" +
+      "(icid|mkt_tok|(g|fb)clid|igshid|_hs(enc|mi)|mc_[ce]id|(utm|stm)_(id|source|medium|term|campaign|content|cid|reader|referrer|name|social|social-type)|rb_clickid|yclid|_openstat|wickedid|otc|oly_(anon|enc)_id|soc_(src|trk)|cvid|oicd)" +
+      "=[^&#]*)",
+    "ig"
+  );
+  for (const urlIndex in urlInMessage) {
+    const url = urlInMessage[urlIndex];
+    const queryStringIndex = url.indexOf("?");
+    if (url.search(searchPattern) > queryStringIndex) {
+      stripped = message.replace(replacePattern, "");
+      if (stripped.charAt(queryStringIndex) === "&") {
+        stripped = `${stripped.substr(0, queryStringIndex)}?${stripped.substr(
+          queryStringIndex + 1
+        )}`;
+      }
+    }
+  }
+  return stripped;
 };
-
-export { getLiveVideoURLFromChannelID, twitterUrlPurifier, UTM_Purifier };
+export {
+  getRumbleStreamURLFromSelector,
+  getLiveStatusFromChannelID,
+  twitterUrlPurifier,
+  UTM_Purifier,
+};
