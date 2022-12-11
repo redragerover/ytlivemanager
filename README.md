@@ -1,6 +1,6 @@
 # ytlivemanager
 
-A function `handleYouTubePoll`, to poll a youtube channel for a live stream. Programatically determine if a YouTube stream is going live
+A set of functions`handleYouTubePoll` and `handleRumblePoll`, to poll live streams. Programatically determine if a stream is going live
 
 Node 18+
 
