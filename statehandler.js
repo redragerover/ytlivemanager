@@ -120,7 +120,7 @@ export const handleYouTubePoll = (
           console.log("fetching is paused");
           return;
         }
-        handleDoubleCheck(state, streamGoesOffline);
+        handleDoubleCheck(state, () => streamGoesOffline(identifier));
         if (state.doubleCheckIfOffline) {
           return;
         }
@@ -131,7 +131,7 @@ export const handleYouTubePoll = (
 
         handleStreamerIsOn(
           state,
-          () => streamToLive(canonicalURL),
+          () => streamToLive(canonicalURL, identifier),
           isStreaming,
           postIntervalDelay
         );
@@ -205,7 +205,7 @@ export const handleRumblePoll = (
           console.log("fetching is paused");
           return;
         }
-        handleDoubleCheck(state, streamGoesOffline);
+        handleDoubleCheck(state, () => streamGoesOffline(identifier));
         if (state.doubleCheckIfOffline) {
           return;
         }
@@ -216,7 +216,7 @@ export const handleRumblePoll = (
 
         handleStreamerIsOn(
           state,
-          () => streamToLive(canonicalURL),
+          () => streamToLive(canonicalURL, identifier),
           isStreaming,
           postIntervalDelay
         );
